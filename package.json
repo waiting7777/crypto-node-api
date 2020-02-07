@@ -1,0 +1,24 @@
+{
+  "name": "crypto-node-api",
+  "version": "1.0.0",
+  "description": "Crypto Exchange API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/waiting7777/crypto-node-api.git"
+  },
+  "keywords": [
+    "Crypto",
+    "Exchange",
+    "Binance"
+  ],
+  "author": "waiting7777",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/waiting7777/crypto-node-api/issues"
+  },
+  "homepage": "https://github.com/waiting7777/crypto-node-api#readme"
+}
