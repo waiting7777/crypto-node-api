@@ -1,5 +1,6 @@
-function test() {
-  console.log(123)
+const Binance = require('./binance')
+const crypto = {
+  Binance
 }
 
-module.exports = test
+module.exports = crypto

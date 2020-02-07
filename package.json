@@ -20,5 +20,10 @@
   "bugs": {
     "url": "https://github.com/waiting7777/crypto-node-api/issues"
   },
-  "homepage": "https://github.com/waiting7777/crypto-node-api#readme"
+  "homepage": "https://github.com/waiting7777/crypto-node-api#readme",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "dayjs": "^1.8.20",
+    "query-string": "^6.10.1"
+  }
 }
