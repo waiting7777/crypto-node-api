@@ -16,6 +16,14 @@ class Binance {
   getSign(cmd) {
     return crypto.createHmac('sha256', this.secretKey).update(queryString.stringify(cmd)).digest('hex')
   }
+
+  injectTimeAndRecvWindow(cmd) {
+    return {
+      ...cmd,
+      timestamp: dayjs().valueOf(),
+      recvWindow: RECVWINDOW
+    }
+  }
   
   doGet(url, cmd = {}) {
     return new Promise(resolve => {
@@ -36,8 +44,44 @@ class Binance {
     return this.doGet(url, cmd)
   }
 
+  doPostWithSign(url, cmd) {
+    return new Promise(resolve => {
+      axios({
+        method: 'post',
+        url: `${this.apiUrl}${url}?${queryString.stringify(cmd)}&signature=${this.getSign(cmd)}`,
+        headers: {
+          'X-MBX-APIKEY': `${this.apiKey}`
+        }
+      })
+      .then(res => resolve(res.data))
+      .catch(error => resolve(error.response.data))
+    })
+  }
+
   getSystemStatus() {
     return this.doGet('wapi/v3/systemStatus.html')
+  }
+
+  getCoinsInfo() {
+    const cmd = {}
+    return this.doGetWithSign('sapi/v1/capital/config/getall', this.injectTimeAndRecvWindow(cmd))
+  }
+
+  getAccountSnapshot(type, startTime, endTime, limit) {
+    const cmd = {
+      type: 'SPOT'
+    }
+    return this.doGetWithSign('/sapi/v1/accountSnapshot', this.injectTimeAndRecvWindow(cmd))
+  }
+
+  getDepositHistory(asset = 'LINK', status = 1, startTime = '', endTime = '') {
+    const cmd = {
+      asset,
+      status,
+      // startTime,
+      // endTime
+    }
+    return this.doGetWithSign('/wapi/v3/depositHistory.html', this.injectTimeAndRecvWindow(cmd))
   }
 
   getServerTime() {
@@ -45,11 +89,22 @@ class Binance {
   }
 
   getAccountInfo() {
+    const cmd = {}
+    return this.doGetWithSign('api/v3/account', this.injectTimeAndRecvWindow(cmd))
+  }
+
+  doLimitOrder(symbol, side, quantity, price, type = 'GTC') {
     const cmd = {
+      symbol: symbol,
+      side: side,
+      timeInForce: type,
+      type: 'LIMIT',
+      quantity: quantity,
+      price: price,
       timestamp: dayjs().valueOf(),
-      recvWindow: RECVWINDOW
+      recvWindow: 10000
     }
-    return this.doGetWithSign('api/v3/account', cmd)
+    return this.doPostWithSign('/api/v3/order', cmd);
   }
 }
 
