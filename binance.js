@@ -58,6 +58,20 @@ class Binance {
     })
   }
 
+  doDeleteWithSign(url, cmd) {
+    return new Promise(resolve => {
+      axios({
+        method: 'delete',
+        url: `${this.apiUrl}${url}?${queryString.stringify(cmd)}&signature=${this.getSign(cmd)}`,
+        headers: {
+          'X-MBX-APIKEY': `${this.apiKey}`
+        }
+      })
+      .then(res => resolve(res.data))
+      .catch(error => resolve(error.response.data))
+    })
+  }
+
   getSystemStatus() {
     return this.doGet('wapi/v3/systemStatus.html')
   }
@@ -71,7 +85,7 @@ class Binance {
     const cmd = {
       type: 'SPOT'
     }
-    return this.doGetWithSign('/sapi/v1/accountSnapshot', this.injectTimeAndRecvWindow(cmd))
+    return this.doGetWithSign('sapi/v1/accountSnapshot', this.injectTimeAndRecvWindow(cmd))
   }
 
   getDepositHistory(asset = 'LINK', status = 1, startTime = '', endTime = '') {
@@ -81,7 +95,7 @@ class Binance {
       // startTime,
       // endTime
     }
-    return this.doGetWithSign('/wapi/v3/depositHistory.html', this.injectTimeAndRecvWindow(cmd))
+    return this.doGetWithSign('wapi/v3/depositHistory.html', this.injectTimeAndRecvWindow(cmd))
   }
 
   getServerTime() {
@@ -93,18 +107,31 @@ class Binance {
     return this.doGetWithSign('api/v3/account', this.injectTimeAndRecvWindow(cmd))
   }
 
-  doLimitOrder(symbol, side, quantity, price, type = 'GTC') {
+  doLimitOrder(symbol, side, quantity, price, timeInForce = 'GTC') {
     const cmd = {
-      symbol: symbol,
-      side: side,
-      timeInForce: type,
+      symbol,
+      side,
+      timeInForce,
       type: 'LIMIT',
-      quantity: quantity,
-      price: price,
-      timestamp: dayjs().valueOf(),
-      recvWindow: 10000
+      quantity,
+      price
     }
-    return this.doPostWithSign('/api/v3/order', cmd);
+    return this.doPostWithSign('api/v3/order', this.injectTimeAndRecvWindow(cmd))
+  }
+
+  getOpenOrder(symbol) {
+    const cmd = {
+      symbol
+    }
+    return this.doGetWithSign('api/v3/openOrders', this.injectTimeAndRecvWindow(cmd))
+  }
+
+  doCancelOrder(symbol, orderId) {
+    const cmd = {
+      symbol,
+      orderId
+    }
+    return this.doDeleteWithSign('api/v3/order', this.injectTimeAndRecvWindow(cmd))
   }
 }
 
