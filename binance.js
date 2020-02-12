@@ -107,12 +107,11 @@ class Binance {
     return this.doGetWithSign('api/v3/account', this.injectTimeAndRecvWindow(cmd))
   }
 
-  doOrder(symbol, type, side, quantity, price, timeInForce = 'GTC') {
+  doLimitMakerOrder(symbol, side, quantity, price) {
     const cmd = {
       symbol,
       side,
-      timeInForce,
-      type,
+      type: 'LIMIT_MAKER',
       quantity,
       price
     }
