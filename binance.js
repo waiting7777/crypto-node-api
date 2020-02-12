@@ -133,6 +133,20 @@ class Binance {
     }
     return this.doDeleteWithSign('api/v3/order', this.injectTimeAndRecvWindow(cmd))
   }
+
+  getOrderBookTicker(symbol) {
+    const cmd = {
+      symbol
+    }
+    return this.doGet('api/v3/ticker/bookTicker', cmd)
+  }
+
+  getPriceTicker(symbol) {
+    const cmd = {
+      symbol
+    }
+    return this.doGet('api/v3/ticker/price', cmd)
+  }
 }
 
 module.exports = Binance
